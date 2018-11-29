@@ -1,5 +1,5 @@
 //
-// codes.js
+// test-include.js
 //
 export class TapeMachine {
     constructor() {
@@ -13,6 +13,4 @@ export class TapeMachine {
     }
 }
 
-const tp = new TapeMachine()
-tp.record('Hello... Hellooooo!!! Helloooooo!!!!!')
-tp.play()
+window.TapeMachine = TapeMachine;

@@ -7,9 +7,10 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "babel src/test-include.js --out-file build/test.js | browserify build/test.js -o test/test-bundle.js",
     "transpileTest": "babel src/test.js --out-file build/test.js",
-    "build" : "babel src/main.js --out-file build/main.js"
+    "build": "babel src/main.js --out-file build/main.js",
+    "browserify": "browserify build/test.js -o test/bundle.js"
   },
   "repository": {
     "type": "git",
@@ -29,11 +30,15 @@
     "@babel/preset-env": "^7.1.6",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.4",
+    "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
     "gulp": "^3.9.1",
     "gulp-babel": "^8.0.0",
     "gulp-cli": "^2.0.1",
     "gulp-uglify": "^3.0.1",
-    "require-dir": "^1.2.0"
+    "require-dir": "^1.2.0",
+    "vinyl-source-stream": "^2.0.0"
   }
 }
