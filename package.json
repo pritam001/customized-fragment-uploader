@@ -1,0 +1,32 @@
+{
+  "name": "fragmentuploader",
+  "version": "1.0.0",
+  "description": "Split files into fragments and upload",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://www.github.com/pritam001/"
+  },
+  "keywords": [
+    "upload",
+    "files",
+    "fragment",
+    "split"
+  ],
+  "author": "pritam.sarkar",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^8.0.0",
+    "gulp-cli": "^2.0.1",
+    "require-dir": "^1.2.0"
+  }
+}
