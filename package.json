@@ -8,9 +8,11 @@
   },
   "scripts": {
     "test": "babel src/test-include.js --out-file build/test.js | browserify build/test.js -o test/test-bundle.js",
-    "transpileTest": "babel src/test.js --out-file build/test.js",
-    "build": "babel src/main.js --out-file build/main.js",
-    "browserify": "browserify build/test.js -o test/bundle.js"
+    "build": "npm run babel && npm run browserify",
+    "babel": "babel src/main.js --out-file build/main.js",
+    "browserify": "browserify build/main.js -o test/main-bundle.js",
+    "transpileTest": "babel src/test-include.js --out-file build/test.js",
+    "browserifyTest": "browserify build/test.js -o test/test-bundle.js"
   },
   "repository": {
     "type": "git",
