@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Fragment Upload Main</title>
-</head>
-<body>
-<div class="input-div">
-    <input id="testFiles" type="file" multiple />
-</div>
-<script type="text/javascript" src="main-bundle.js"></script>
-<script type="text/javascript">
+    <head>
+        <meta charset="UTF-8">
+        <title>Fragment Upload Main</title>
+    </head>
 
-</script>
-</body>
+    <body>
+        <div class="input-div">
+            <input id="testFiles" type="file" multiple />
+        </div>
+        <script type="text/javascript" src="main-bundle.js"></script>
+        <script type="text/javascript">
+            var cfUploader = new CFUploader();
+            cfUploader.watchDOMId("testFiles");
+        </script>
+    </body>
 </html>
