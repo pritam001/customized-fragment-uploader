@@ -21,7 +21,7 @@ var CFUploader = exports.CFUploader = function () {
         this._targetDivID = "";
         this._isUploading = false;
         this._errorMessage = "";
-        // TODO: chunk size
+        this._chunkSize = 100 * 1024; // In Bytes
         // TODO: unique id generator function
         // TODO: file type check function
         // TODO: file size limit
@@ -33,6 +33,7 @@ var CFUploader = exports.CFUploader = function () {
             "postUploadCompletion": null,
             "preFileUpload": null,
             "fileUploadURL": null,
+            "fragmentUploadURL": null,
             "postFileUpload": null
         };
     }
@@ -172,6 +173,14 @@ var CFUploader = exports.CFUploader = function () {
             this._errorMessage = error;
         }
     }, {
+        key: "chunkSize",
+        get: function get() {
+            return this._chunkSize;
+        },
+        set: function set(size) {
+            this._chunkSize = size;
+        }
+    }, {
         key: "uploadAPIs",
         get: function get() {
             return this._uploadAPIs;
@@ -190,13 +199,14 @@ var CFUploader = exports.CFUploader = function () {
 }();
 
 var FileUploader = function () {
-    function FileUploader(cfUploader, file, uid) {
+    function FileUploader(parentCFUploader, file, uid) {
         _classCallCheck(this, FileUploader);
 
-        this._parentCFUploader = cfUploader;
+        this._parentCFUploader = parentCFUploader;
         this._file = file;
-        this._uniqueID = uid;
+        this._fragmentUploaders = new Map();
         this._isFileUploading = false;
+        this._uid = uid;
     }
 
     _createClass(FileUploader, [{
@@ -233,6 +243,11 @@ var FileUploader = function () {
                             reject(false);
                         };
                         _this5.parentCFUploader.uploadAPIs.fileUploadURL.execute();
+                    } else if (!!_this5.parentCFUploader.uploadAPIs.fragmentUploadURL) {
+                        // TODO: fragment the file, create uploaders, check if all fragments are uploaded, on Promise.all resolve
+                        var fragmentUploaders = _this5.generateFragments();
+                        _this5.fragmentUploaders = fragmentUploaders;
+                        fragmentUploaders.forEach(function (fu) {});
                     } else {
                         resolve(true);
                     }
@@ -258,16 +273,67 @@ var FileUploader = function () {
         }
     }, {
         key: "cancelFileUpload",
-        value: function cancelFileUpload() {
-            // TODO: on cancel file upload
+        value: function cancelFileUpload() {}
+        // TODO: on cancel file upload
+
+
+        /*
+        fragment file, create uploaders
+         */
+
+    }, {
+        key: "generateFragments",
+        value: function generateFragments() {
+            var fragmentUploader = void 0,
+                fragmentUploaders = new Map();
+            var fragmentSize = this.parentCFUploader.chunkSize,
+                file = this.file;
+            var fragmentIndex = 0,
+                offset = void 0,
+                fragment = void 0,
+                fragmentUID = void 0,
+                noOfFragments = Math.ceil(file.size / fragmentSize);
+            while (fragmentIndex < noOfFragments) {
+                offset = fragmentIndex * fragmentSize;
+                fragment = file.slice(offset, fragmentSize);
+                fragmentUID = this.uid.toString() + "_" + fragmentIndex.toString();
+                fragmentUploader = FragmentUploader(this.parentCFUploader, this, fragment, fragmentUID);
+                fragmentUploaders.set(fragmentUID, fragmentUploader);
+                fragmentIndex++;
+            }
+            return fragmentUploaders;
         }
     }, {
         key: "parentCFUploader",
         get: function get() {
             return this._parentCFUploader;
         },
-        set: function set(cfUploader) {
-            this._parentCFUploader = cfUploader;
+        set: function set(value) {
+            this._parentCFUploader = value;
+        }
+    }, {
+        key: "file",
+        get: function get() {
+            return this._file;
+        },
+        set: function set(value) {
+            this._file = value;
+        }
+    }, {
+        key: "uid",
+        get: function get() {
+            return this._uid;
+        },
+        set: function set(value) {
+            this._uid = value;
+        }
+    }, {
+        key: "fragmentUploaders",
+        get: function get() {
+            return this._fragmentUploaders;
+        },
+        set: function set(value) {
+            this._fragmentUploaders = value;
         }
     }, {
         key: "isFileUploading",
@@ -282,9 +348,61 @@ var FileUploader = function () {
     return FileUploader;
 }();
 
-var FragmentUploader = function FragmentUploader() {
-    _classCallCheck(this, FragmentUploader);
-};
+var FragmentUploader = function () {
+    function FragmentUploader(parentCFUploader, parentFileUploader, fragment, uid) {
+        _classCallCheck(this, FragmentUploader);
+
+        this._parentCFUploader = parentCFUploader;
+        this._parentFileUploader = parentFileUploader;
+        this._fragment = fragment;
+        this._isFragmentUploading = false;
+        this._uid = uid;
+    }
+
+    _createClass(FragmentUploader, [{
+        key: "parentCFUploader",
+        get: function get() {
+            return this._parentCFUploader;
+        },
+        set: function set(value) {
+            this._parentCFUploader = value;
+        }
+    }, {
+        key: "parentFileUploader",
+        get: function get() {
+            return this._parentFileUploader;
+        },
+        set: function set(value) {
+            this._parentFileUploader = value;
+        }
+    }, {
+        key: "fragment",
+        get: function get() {
+            return this._fragment;
+        },
+        set: function set(value) {
+            this._fragment = value;
+        }
+    }, {
+        key: "uid",
+        get: function get() {
+            return this._uid;
+        },
+        set: function set(value) {
+            this._uid = value;
+        }
+    }, {
+        key: "isFragmentUploading",
+        get: function get() {
+            return this._isFragmentUploading;
+        },
+        set: function set(value) {
+            this._isFragmentUploading = value;
+        }
+    }]);
+
+    return FragmentUploader;
+}();
 
 var UploaderAPIObject = function () {
     function UploaderAPIObject(_ref) {
@@ -300,7 +418,7 @@ var UploaderAPIObject = function () {
         this._url = url;
         this._method = method;
         this._header = !!header ? header : {};
-        this._body = body;
+        this._body = body; // TODO: accept json body
         this._onSuccess = null;
         this._onFailure = null;
         this._postSuccess = postSuccess;
