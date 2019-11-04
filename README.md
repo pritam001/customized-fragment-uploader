@@ -1,5 +1,7 @@
 # customized-fragment-uploader
 A small javascript library to upload files with customization and fragmentation
+
+[![made-with-js](https://img.shields.io/badge/Made%20with-Javascript-1f425f.svg)](https://developer.mozilla.org/bm/docs/Web/JavaScript)
 ![Github Fork](https://img.shields.io/github/forks/pritam001/customized-fragment-uploader.svg?style=social&label=Fork&maxAge=2592000)
 [![GitHub license](https://img.shields.io/github/license/pritam001/customized-fragment-uploader.svg)](https://github.com/pritam001/customized-fragment-uploader/blob/master/LICENSE)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://gitHub.com/pritam001/customized-fragment-uploader/graphs/commit-activity)
